@@ -1,0 +1,94 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id Int @id @default(autoincrement())
+  email String @unique
+  password String
+  firstname String
+  lastname String
+  profilepicture String?
+  age String?
+
+  quizzes Quiz[]
+  scores Score[]
+
+  Review Review[]
+}
+
+model Category {
+  id       Int     @id @default(autoincrement())
+  name     String  @unique
+  quizzes  Quiz[]
+}
+
+model Quiz {
+  id Int @id @default(autoincrement())
+
+  categoryId  Int
+  category    Category     @relation(fields: [categoryId], references: [id])
+  questions Question[]
+
+  users User[]
+  scores Score[]
+  createdAt DateTime @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model QuizProgress {
+  id           Int      @id @default(autoincrement())
+  userId       Int
+  user         User     @relation(fields: [userId], references: [id])
+  quizId       Int
+  quiz         Quiz     @relation(fields: [quizId], references: [id])
+  completed    Boolean  @default(false)
+  correctCount Int      @default(0)
+  totalCount   Int      @default(0)
+  updatedAt    DateTime @updatedAt
+}
+
+model Question {
+  id Int @id @default(autoincrement())
+  text String
+  options String[]
+  answer String
+  mediaUrl  String?
+
+  quizId Int
+  quiz Quiz @relation(fields: [quizId], references: [id])
+}
+
+model Score {
+  id Int @id @default(autoincrement())
+  value Int
+
+  userId Int
+  user User @relation(fields: [userId], references: [id])
+
+  quizId Int
+  quiz Quiz @relation(fields: [quizId], references: [id])
+  createdAt DateTime @default(now())
+}
+
+model Review {
+  id       Int      @id @default(autoincrement())
+  content  String
+  rating   Int      @default(5)
+  userId   Int
+  user     User     @relation(fields: [userId], references: [id])
+  quizId   Int
+  quiz     Quiz     @relation(fields: [quizId], references: [id])
+  createdAt DateTime @default(now())
+}
