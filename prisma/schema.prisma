@@ -26,6 +26,8 @@ model User {
   scores Score[]
 
   Review Review[]
+
+  QuizProgress QuizProgress[]
 }
 
 model Category {
@@ -40,11 +42,18 @@ model Quiz {
   categoryId  Int
   category    Category     @relation(fields: [categoryId], references: [id])
   questions Question[]
+  language String @default("English")
+  difficulty  String    @default("Medium")
 
   users User[]
   scores Score[]
   createdAt DateTime @default(now())
   updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  QuizProgress QuizProgress[]
+
+  Review Review[]
 }
 
 model QuizProgress {
@@ -56,7 +65,10 @@ model QuizProgress {
   completed    Boolean  @default(false)
   correctCount Int      @default(0)
   totalCount   Int      @default(0)
+  timeTaken    Int      @default(0)
   updatedAt    DateTime @updatedAt
+   startedAt    DateTime
+  completedAt  DateTime?
 }
 
 model Question {
@@ -65,6 +77,7 @@ model Question {
   options String[]
   answer String
   mediaUrl  String?
+  difficulty  String  @default("medium")
 
   quizId Int
   quiz Quiz @relation(fields: [quizId], references: [id])
