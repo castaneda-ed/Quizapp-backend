@@ -44,6 +44,13 @@ const prisma = new PrismaClient().$extends({
           throw e;
         }
       },
+      /**
+       * Takes the current password as validation and then changes it to a new (hashed) password
+       * @param {string} id
+       * @param {string} currentPassword
+       * @param {string} newPassword
+       * @returns The user with the new password
+       */
       async updatePassword(id, currentPassword, newPassword) {
         try {
           const user = await prisma.user.findUniqueOrThrow({
